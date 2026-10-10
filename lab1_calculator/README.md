@@ -1,17 +1,59 @@
-# calculator
+# Лабораторная работа №1 - Калькулятор
 
-A new Flutter project.
+Калькулятор на Flutter для дисциплины "Разработка мобильных приложений".
 
-## Getting Started
+## Что умеет
 
-This project is a starting point for a Flutter application.
+- операции +, −, ×, ÷ с целыми и десятичными числами
+- считает выражение целиком с приоритетом: сначала × и ÷, потом + и − (2 + 3 × 4 = 14)
+- сверху видно выражение, снизу крупно результат
+- C - очистить, ⌫ - стереть последний символ, +/- - поменять знак числа
+- деление на ноль и слишком большие числа не ломают приложение, выводится сообщение
+- после "=" можно продолжать считать от результата
 
-A few resources to get you started if this is your first Flutter project:
+Доп. задание:
+- история последних вычислений (кнопка с часами вверху справа)
+- тёмная и светлая тема (кнопка солнце/луна)
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## Запуск
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```
+flutter pub get
+flutter run
+```
+
+В браузере: `flutter run -d chrome` (или `-d edge`).
+
+Тесты: `flutter test`
+
+## Структура
+
+```
+lib/
+  main.dart                       запуск приложения, темы
+  screens/calculator_screen.dart  экран: дисплей, кнопки, история
+  widgets/calc_button.dart        одна кнопка калькулятора
+  logic/calculator_state.dart     состояние: что набрано, результат, история
+  logic/calculator_logic.dart     вычисления
+test/
+  calculator_logic_test.dart      тесты вычислений
+  calculator_state_test.dart      тесты нажатий кнопок
+  widget_test.dart                тесты экрана
+```
+
+Сделано по схеме из методички: UI → CalculatorState → CalculatorLogic.
+Экран сам ничего не считает, он только передаёт нажатую кнопку в CalculatorState
+и перерисовывается через setState().
+
+## Тестовые сценарии
+
+| Ввод | Результат |
+|---|---|
+| 12 + 8 | 20 |
+| 15 − 7 | 8 |
+| 6 × 7 | 42 |
+| 20 ÷ 4 | 5 |
+| 5 ÷ 0 | На ноль делить нельзя |
+| 12.5 + 0.5 | 13 |
+
+Все сценарии проверяются в `test/calculator_state_test.dart`.
