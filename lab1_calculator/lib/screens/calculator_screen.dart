@@ -5,7 +5,14 @@ import '../logic/calculator_state.dart';
 import '../widgets/calc_button.dart';
 
 class CalculatorScreen extends StatefulWidget {
-  const CalculatorScreen({super.key});
+  final bool isDark;
+  final VoidCallback onThemeChanged;
+
+  const CalculatorScreen({
+    super.key,
+    required this.isDark,
+    required this.onThemeChanged,
+  });
 
   @override
   State<CalculatorScreen> createState() => _CalculatorScreenState();
@@ -45,6 +52,18 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Калькулятор'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            tooltip: 'История',
+            onPressed: showHistory,
+          ),
+          IconButton(
+            icon: Icon(widget.isDark ? Icons.light_mode : Icons.dark_mode),
+            tooltip: 'Сменить тему',
+            onPressed: widget.onThemeChanged,
+          ),
+        ],
       ),
       body: SafeArea(
         child: Center(
@@ -53,6 +72,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             constraints: const BoxConstraints(maxWidth: 480),
             child: Column(
               children: [
+                // дисплей и кнопки делят высоту экрана как 2 к 5
                 Expanded(flex: 2, child: buildDisplay()),
                 Expanded(flex: 5, child: buildButtons()),
               ],
@@ -60,6 +80,58 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  // история открывается снизу шторкой
+  void showHistory() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        if (calc.history.isEmpty) {
+          return const SizedBox(
+            height: 150,
+            child: Center(child: Text('История пока пустая')),
+          );
+        }
+
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: const Text(
+                'История',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              trailing: TextButton(
+                onPressed: () {
+                  setState(() {
+                    calc.clearHistory();
+                  });
+                  Navigator.pop(context);
+                },
+                child: const Text('Очистить'),
+              ),
+            ),
+            const Divider(height: 1),
+            Flexible(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: calc.history.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(
+                      calc.history[index],
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

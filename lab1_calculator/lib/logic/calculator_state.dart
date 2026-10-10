@@ -9,8 +9,11 @@ class CalculatorState {
   String? error;
   // true сразу после нажатия "="
   bool justCalculated = false;
+  // история вычислений, новые сверху
+  List<String> history = [];
 
   static const int maxDigits = 15;
+  static const int maxHistory = 20;
 
   // сюда приходит текст нажатой кнопки
   void press(String button) {
@@ -140,9 +143,18 @@ class CalculatorState {
       double value = CalculatorLogic.calculate(tokens);
       result = CalculatorLogic.formatNumber(value);
       justCalculated = true;
+
+      history.insert(0, '$expressionText = $result');
+      if (history.length > maxHistory) {
+        history.removeLast();
+      }
     } on CalculatorException catch (e) {
       error = e.message;
     }
+  }
+
+  void clearHistory() {
+    history.clear();
   }
 
   void backspace() {

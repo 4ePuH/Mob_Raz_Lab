@@ -92,6 +92,24 @@ void main() {
     expect(pressAll(['8', '×', '+/-', '2', '=']).bottomLine, '-16');
   });
 
+  test('история: новые сверху, ошибки не попадают', () {
+    var calc = pressAll(['1', '+', '1', '=', '5', '÷', '0', '=', '2', '×', '3', '=']);
+    expect(calc.history, ['2 × 3 = 6', '1 + 1 = 2']);
+  });
+
+  test('история не больше 20 записей и C её не трогает', () {
+    var calc = CalculatorState();
+    for (int i = 0; i < 25; i++) {
+      for (String b in ['1', '+', '1', '=']) {
+        calc.press(b);
+      }
+    }
+    calc.press('C');
+    expect(calc.history.length, CalculatorState.maxHistory);
+    calc.clearHistory();
+    expect(calc.history, isEmpty);
+  });
+
   test('слишком длинное число не набирается', () {
     var buttons = List.filled(20, '9');
     expect(pressAll(buttons).bottomLine.length, CalculatorState.maxDigits);
